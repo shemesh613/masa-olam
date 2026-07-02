@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מסע מסביב לעולם – קייטנה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;font-family:"Heebo",Arial,sans-serif;color:#274060;
+    background:linear-gradient(160deg,#eaf4ff,#fff8ec);}
+  .globe{font-size:clamp(70px,16vw,120px);text-align:center;margin-top:26px;animation:spin 14s linear infinite;}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  h1{text-align:center;font-size:clamp(30px,7vw,58px);font-weight:900;margin:6px 12px 2px;
+    text-shadow:0 3px 0 rgba(255,255,255,.6);}
+  .sub{text-align:center;font-size:clamp(16px,3vw,22px);font-weight:700;color:#3a5a80;margin-bottom:26px;}
+  .cards{max-width:900px;margin:0 auto;padding:0 18px 50px;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+  a.card{text-decoration:none;color:#274060;background:#fff;border-radius:26px;padding:28px 20px;text-align:center;
+    box-shadow:0 8px 22px rgba(0,0,0,.10);border:4px solid #fff;transition:transform .15s,box-shadow .15s;display:block;}
+  a.card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,0,0,.16);}
+  a.card:active{transform:scale(.98);}
+  .ico{font-size:64px;line-height:1;}
+  .clbl{font-size:clamp(22px,4vw,30px);font-weight:900;margin-top:12px;}
+  .cdesc{font-size:15px;color:#5a6b82;font-weight:700;margin-top:6px;line-height:1.5;}
+  .c1{background:linear-gradient(160deg,#fff,#eef6ff);}
+  .c2{background:linear-gradient(160deg,#fff,#fff2e0);}
+  .c3{background:linear-gradient(160deg,#fff,#eafbf0);}
+  footer{text-align:center;color:#8fa3bd;font-size:13px;padding:0 0 30px;}
+</style>
+</head>
+<body>
+  <div class="globe">🌍</div>
+  <h1>מַסָּע מִסָּבִיב לָעוֹלָם</h1>
+  <div class="sub">✈️ קַיְטָנַת קַיִץ · כִּתּוֹת הַתִּקְשֹׁרֶת</div>
+
+  <div class="cards">
+    <a class="card c1" href="game.html">
+      <div class="ico">🎮</div>
+      <div class="clbl">מִשְׂחָקִים</div>
+      <div class="cdesc">בּוּעוֹת, הַמְרָאָה, הַפְתָּעָה, דְּגָלִים וְזִכָּרוֹן — עִם קֶרְיָנוּת וְאִסּוּף כּוֹכָבִים</div>
+    </a>
+    <a class="card c2" href="stickers.html">
+      <div class="ico">🎉</div>
+      <div class="clbl">אַלְבּוֹם הַמַּדְבֵּקוֹת</div>
+      <div class="cdesc">בְּיַחַד נֶאֱסֹף אֶת כָּל הָעוֹלָם! אַלְבּוֹם כִּתָּתִי מְשֻׁתָּף</div>
+    </a>
+    <a class="card c3" href="presentation.html">
+      <div class="ico">🎬</div>
+      <div class="clbl">מַצֶּגֶת מְדַבֶּרֶת</div>
+      <div class="cdesc">סִיּוּר מְדֻבָּר בֵּין הַמְּדִינוֹת — דְּגָלִים, בְּרָכוֹת וְעֻבְדּוֹת</div>
+    </a>
+  </div>
+
+  <footer>🌍 מסע מסביב לעולם · קייטנת קיץ</footer>
+</body>
+</html>

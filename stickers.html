@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>אלבום המסע של הכיתה – מסביב לעולם</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--sky:#bfe0ff;--sky2:#7fb4f0;--cream:#fff8ec;--ink:#274060;--gold:#f2b134;--good:#3cb371;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;font-family:"Heebo",Arial,sans-serif;color:var(--ink);
+    background:linear-gradient(160deg,#eaf4ff,#fff8ec);min-height:100%;}
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(160deg,#bfe0ff,#8fc0f5);
+    padding:14px 18px 18px;box-shadow:0 3px 14px rgba(0,0,0,.12);border-radius:0 0 22px 22px;}
+  h1{margin:0 0 4px;font-size:clamp(22px,4vw,34px);font-weight:900;color:#274060;text-align:center;}
+  .sub{text-align:center;font-size:clamp(14px,2.4vw,18px);color:#3a5a80;font-weight:700;margin-bottom:10px;}
+  /* progress */
+  .prog{max-width:640px;margin:0 auto;background:rgba(255,255,255,.6);border-radius:30px;height:26px;
+    overflow:hidden;box-shadow:inset 0 2px 5px rgba(0,0,0,.12);}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,#3cb371,#7fd68f);border-radius:30px;
+    transition:width .8s cubic-bezier(.2,.8,.2,1);}
+  .count{text-align:center;font-weight:900;font-size:clamp(16px,2.6vw,22px);margin-top:8px;color:#1f6b45;}
+  .tools{display:flex;gap:10px;justify-content:center;margin-top:8px;}
+  .tbtn{background:#fff;border:none;border-radius:20px;padding:6px 16px;font-family:inherit;font-weight:800;
+    font-size:14px;color:#274060;cursor:pointer;box-shadow:0 2px 0 #cdd8e6;}
+  .tbtn:active{transform:translateY(2px);box-shadow:none;}
+
+  main{max-width:960px;margin:16px auto;padding:0 14px 60px;}
+  .conttitle{font-size:clamp(19px,3vw,26px);font-weight:900;color:#274060;margin:22px 6px 10px;
+    display:flex;align-items:center;gap:10px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+
+  .card{background:#fff;border-radius:20px;padding:14px 10px 12px;text-align:center;cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,.10);position:relative;transition:transform .15s;user-select:none;
+    border:3px solid #eef3f9;}
+  .card:active{transform:scale(.97);}
+  .flagwrap{width:96px;height:96px;margin:0 auto 8px;border-radius:50%;overflow:hidden;
+    box-shadow:0 3px 8px rgba(0,0,0,.18);border:4px solid #fff;position:relative;background:#eef3f9;}
+  .flagwrap img{width:100%;height:100%;object-fit:cover;}
+  .cname{font-weight:900;font-size:19px;color:#274060;}
+  .cemoji{font-size:22px;margin-top:2px;}
+
+  /* locked state */
+  .card.locked{background:#f3f5f9;border-color:#e6ebf2;}
+  .card.locked .flagwrap img{filter:grayscale(1) brightness(1.08) opacity(.5);}
+  .card.locked .cname{color:#b6c0d0;}
+  .card.locked .cemoji{filter:grayscale(1) opacity(.45);}
+  .lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:34px;
+    opacity:.55;}
+  .card:not(.locked) .lock{display:none;}
+  /* unlocked shine */
+  .card.done{border-color:var(--gold);}
+  .card.done .flagwrap{border-color:var(--gold);}
+  .stamp{position:absolute;top:-8px;left:-8px;font-size:26px;transform:rotate(-12deg);
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.2));}
+  .card:not(.done) .stamp{display:none;}
+
+  @keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  .justdone .flagwrap{animation:pop .6s ease;}
+
+  /* sparkles */
+  .spark{position:fixed;pointer-events:none;font-size:26px;z-index:60;animation:fly 1s ease-out forwards;}
+  @keyframes fly{0%{opacity:1;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}}
+
+  /* finale */
+  #finale{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;
+    background:rgba(20,40,70,.55);backdrop-filter:blur(3px);text-align:center;padding:20px;}
+  #finale .box{background:linear-gradient(160deg,#fff8ec,#ffe9b8);border-radius:26px;padding:34px 28px;
+    max-width:460px;box-shadow:0 14px 50px rgba(0,0,0,.4);animation:pop .6s ease;}
+  #finale h2{font-size:34px;margin:6px 0;color:#b56b00;}
+  #finale p{font-size:20px;color:#5a4a2a;font-weight:700;}
+  #finale button{margin-top:16px;background:#3cb371;color:#fff;border:none;border-radius:24px;
+    padding:12px 30px;font-family:inherit;font-weight:900;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #2b8a55;}
+
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌍 אַלְבּוֹם הַמַּסָּע שֶׁל הַכִּתָּה</h1>
+  <div class="sub">בְּיַחַד נֶאֱסֹף אֶת כָּל הָעוֹלָם! כָּל מְדִינָה שֶׁנְּגַלֶּה – מְקַבֶּלֶת מַדְבֵּקָה 🎉</div>
+  <div class="prog"><div class="fill" id="fill"></div></div>
+  <div class="count" id="count">אָסַפְנוּ 0 מִתּוֹךְ 27 מְדִינוֹת</div>
+  <div class="tools">
+    <button class="tbtn" id="mute">🔊 צְלִיל</button>
+    <button class="tbtn" id="reset">↺ אִפּוּס</button>
+  </div>
+</header>
+<main id="main"></main>
+
+<div id="finale"><div class="box">
+  <div style="font-size:64px">🏆🌍</div>
+  <h2>כָּל הַכָּבוֹד לַכִּתָּה!</h2>
+  <p>הִשְׁלַמְנוּ אֶת כָּל הַמַּסָּע מִסָּבִיב לָעוֹלָם – יַחַד! כֻּלָּנוּ חוֹקְרֵי עוֹלָם 🌟</p>
+  <button onclick="document.getElementById('finale').style.display='none'">יֵשׁ! 🎉</button>
+</div></div>
+
+<script>
+const DATA=[
+ {cont:"אֵירוֹפָּה 🏰",days:[
+   {n:"צָרְפַת",code:"fr",e:"🗼"},{n:"אִיטַלְיָה",code:"it",e:"🍕"},{n:"בְּרִיטַנְיָה",code:"gb",e:"👑"},
+   {n:"סְפָרַד",code:"es",e:"⚽"},{n:"יָוָן",code:"gr",e:"🏛️"}]},
+ {cont:"אַסְיָה 🐼",days:[
+   {n:"יָפָן",code:"jp",e:"🌸"},{n:"סִין",code:"cn",e:"🐼"},{n:"הֹדּוּ",code:"in",e:"🐘"},{n:"תַאִילַנְד",code:"th",e:"🛕"}]},
+ {cont:"אַפְרִיקָה 🦁",days:[
+   {n:"קֶנְיָה",code:"ke",e:"🦁"},{n:"דְּרוֹם אַפְרִיקָה",code:"za",e:"🦓"},{n:"מָרוֹקוֹ",code:"ma",e:"🐪"},{n:"מָדָגַסְקַר",code:"mg",e:"🦎"}]},
+ {cont:"אֲמֵרִיקָה הַצְּפוֹנִית 🗽",days:[
+   {n:"אַרְצוֹת הַבְּרִית",code:"us",e:"🗽"},{n:"קָנָדָה",code:"ca",e:"🍁"},{n:"מֶקְסִיקוֹ",code:"mx",e:"🌵"},
+   {n:"גָ'מַייקָה",code:"jm",e:"🥁"},{n:"קוֹסְטָה רִיקָה",code:"cr",e:"🐒"}]},
+ {cont:"אֲמֵרִיקָה הַדְּרוֹמִית 🦜",days:[
+   {n:"בְּרָזִיל",code:"br",e:"🦜"},{n:"אַרְגֶנְטִינָה",code:"ar",e:"💃"},{n:"פֵּרוּ",code:"pe",e:"🦙"},
+   {n:"צִ'ילֶה",code:"cl",e:"🗿"},{n:"קוֹלוֹמְבְּיָה",code:"co",e:"☕"}]},
+ {cont:"אוֹסְטְרַלְיָה וְאוֹקְיָאנְיָה 🦘",days:[
+   {n:"אוֹסְטְרַלְיָה",code:"au",e:"🦘"},{n:"נְיוּ זִילַנְד",code:"nz",e:"🐑"},{n:"טָהִיטִי",code:"pf",e:"🌺"},{n:"פִיגִ'י",code:"fj",e:"🐠"}]},
+];
+const flag=c=>`https://flagcdn.com/w320/${c}.png`;
+const TOTAL=DATA.reduce((s,g)=>s+g.days.length,0);
+const KEY="camp_stickers_v1";
+let done=JSON.parse(localStorage.getItem(KEY)||"{}");
+let muted=localStorage.getItem("camp_mute")==="1";
+
+// ----- gentle chime (WebAudio) -----
+let actx;
+function chime(){
+  if(muted)return;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const notes=[523,659,784,1047];// C5 E5 G5 C6
+    notes.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();
+      o.type="sine";o.frequency.value=f;o.connect(g);g.connect(actx.destination);
+      const t=actx.currentTime+i*0.09;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.22,t+0.03);
+      g.gain.exponentialRampToValueAtTime(.001,t+0.5);o.start(t);o.stop(t+0.55);});
+  }catch(e){}
+}
+function sparkle(x,y){
+  const em=["✨","⭐","🌟","💫"];
+  for(let i=0;i<8;i++){const s=document.createElement("div");s.className="spark";
+    s.textContent=em[i%em.length];s.style.left=x+"px";s.style.top=y+"px";
+    const a=Math.random()*6.28,d=60+Math.random()*70;
+    s.style.setProperty("--dx",Math.cos(a)*d+"px");s.style.setProperty("--dy",Math.sin(a)*d+"px");
+    document.body.appendChild(s);setTimeout(()=>s.remove(),1000);}
+}
+
+function render(){
+  const main=document.getElementById("main");main.innerHTML="";
+  DATA.forEach(g=>{
+    const h=document.createElement("div");h.className="conttitle";h.textContent=g.cont;main.appendChild(h);
+    const grid=document.createElement("div");grid.className="grid";
+    g.days.forEach(d=>{
+      const c=document.createElement("div");
+      c.className="card "+(done[d.code]?"done":"locked");
+      c.innerHTML=`<div class="stamp">🌟</div><div class="lock">🔒</div>
+        <div class="flagwrap"><img src="${flag(d.code)}" alt=""></div>
+        <div class="cname">${d.n}</div><div class="cemoji">${d.e}</div>`;
+      c.onclick=e=>toggle(d.code,c,e);
+      grid.appendChild(c);
+    });
+    main.appendChild(grid);
+  });
+  updateProgress();
+}
+function updateProgress(){
+  const n=Object.keys(done).filter(k=>done[k]).length;
+  document.getElementById("fill").style.width=(n/TOTAL*100)+"%";
+  document.getElementById("count").textContent=`אָסַפְנוּ ${n} מִתּוֹךְ ${TOTAL} מְדִינוֹת`;
+}
+function toggle(code,card,ev){
+  if(done[code]){ return; } // כבר נאסף – לא מורידים (מסע חיובי, לא לוקחים בחזרה)
+  done[code]=true;localStorage.setItem(KEY,JSON.stringify(done));
+  card.classList.remove("locked");card.classList.add("done","justdone");
+  const r=card.getBoundingClientRect();sparkle(r.left+r.width/2,r.top+r.height/2);
+  chime();updateProgress();
+  setTimeout(()=>card.classList.remove("justdone"),700);
+  if(Object.keys(done).filter(k=>done[k]).length===TOTAL){
+    setTimeout(()=>{document.getElementById("finale").style.display="flex";bigCheer();},500);
+  }
+}
+function bigCheer(){ for(let i=0;i<3;i++) setTimeout(()=>sparkle(innerWidth/2,innerHeight/2),i*250); chime(); }
+
+document.getElementById("mute").onclick=function(){
+  muted=!muted;localStorage.setItem("camp_mute",muted?"1":"0");
+  this.textContent=muted?"🔇 מֻשְׁתָּק":"🔊 צְלִיל";
+};
+document.getElementById("mute").textContent=muted?"🔇 מֻשְׁתָּק":"🔊 צְלִיל";
+document.getElementById("reset").onclick=function(){
+  if(confirm("לְאַפֵּס אֶת הָאַלְבּוֹם וְלְהַתְחִיל מַסָּע חָדָשׁ?")){done={};localStorage.setItem(KEY,"{}");render();}
+};
+render();
+</script>
+</body>
+</html>

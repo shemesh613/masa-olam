@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מסביב לעולם – מצגת מדברת</title>
+<style>
+  :root{--ink:#1d2b3a;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;font-family:"Assistant","Segoe UI",Arial,sans-serif;color:#fff;overflow:hidden;}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;background:#0b1c2c;transition:background .8s ease;}
+
+  /* ----- שלב פתיחה (כפתור התחלה – צריך מגע כדי שהדיבור יפעל) ----- */
+  #start{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+         background:radial-gradient(circle at 50% 35%,#3b7ddd,#0b1c2c);text-align:center;padding:24px;}
+  #start .globe{font-size:130px;animation:spin 9s linear infinite;}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  #start h1{font-size:clamp(34px,7vw,78px);margin:0;text-shadow:0 5px 0 rgba(0,0,0,.25);}
+  #start p{font-size:clamp(17px,2.5vw,26px);max-width:760px;margin:0;opacity:.95;}
+  .bigbtn{font-size:clamp(22px,3.5vw,34px);font-weight:900;padding:18px 46px;border:none;border-radius:60px;cursor:pointer;
+          background:#ffd54a;color:#5a3b00;box-shadow:0 8px 0 #c79a14;transition:transform .1s;}
+  .bigbtn:active{transform:translateY(4px);box-shadow:0 4px 0 #c79a14;}
+  .note{font-size:14px;opacity:.7;margin-top:6px;}
+
+  /* ----- במה ----- */
+  #stage{flex:1;display:flex;align-items:center;justify-content:center;padding:3vh 4vw;position:relative;}
+  .scene{width:100%;max-width:1100px;text-align:center;animation:fade .7s ease;}
+  @keyframes fade{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+
+  /* מדינה */
+  .cname{font-size:clamp(40px,8vw,90px);font-weight:900;margin:0 0 2vh;text-shadow:0 4px 0 rgba(0,0,0,.22);}
+  .flag{width:min(60vw,520px);max-height:46vh;border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.45);border:5px solid #fff;
+        object-fit:cover;animation:kb 9s ease-in-out infinite alternate;}
+  @keyframes kb{from{transform:scale(1)}to{transform:scale(1.06)}}
+  .info{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:3vh 0 1.5vh;}
+  .chip{background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border:2px solid rgba(255,255,255,.4);
+        border-radius:50px;padding:14px 26px;font-size:clamp(20px,3vw,32px);font-weight:800;transition:.35s;}
+  .fact{font-size:clamp(20px,3vw,32px);font-weight:700;max-width:900px;margin:1vh auto 0;line-height:1.5;
+        background:rgba(0,0,0,.18);border-radius:18px;padding:16px 24px;transition:.35s;}
+
+  /* כותרת יבשת */
+  .bigemo{font-size:clamp(110px,22vw,220px);line-height:1;filter:drop-shadow(0 10px 14px rgba(0,0,0,.35));animation:pop .8s ease;}
+  @keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  .contname{font-size:clamp(40px,9vw,96px);font-weight:900;margin-top:1vh;text-shadow:0 5px 0 rgba(0,0,0,.25);}
+  .contsub{font-size:clamp(20px,3vw,30px);opacity:.92;margin-top:1vh;}
+
+  /* הדגשה (ספוטלייט על מה שמדברים עליו) */
+  .focusable{opacity:.45;filter:saturate(.6);}
+  .focusable.spot{opacity:1;filter:none;transform:scale(1.07);box-shadow:0 0 0 5px #ffd54a, 0 14px 40px rgba(0,0,0,.45);}
+  .chip.focusable.spot{box-shadow:0 0 0 5px #ffd54a;}
+  .fact.focusable.spot{box-shadow:0 0 0 4px #ffd54a;}
+  /* כשאין מיקוד – הכל מלא */
+  .scene.nofocus .focusable{opacity:1;filter:none;}
+
+  /* ----- דמות מלווה: "דני חוקר העולם" ----- */
+  #mascot{position:fixed;bottom:96px;right:22px;z-index:26;width:120px;height:150px;
+          filter:drop-shadow(0 8px 12px rgba(0,0,0,.4));animation:bob 2.8s ease-in-out infinite;pointer-events:none;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-11px) rotate(2deg)}}
+  #mascot.talking{animation:talk .55s ease-in-out infinite;}
+  @keyframes talk{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.06)}}
+  #mascot .hand{transform-origin:84px 70px;animation:wave 1.6s ease-in-out infinite;}
+  @keyframes wave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(18deg)}}
+  @media (max-width:640px){#mascot{width:84px;height:104px;bottom:86px;right:8px;}}
+
+  /* ----- כתובית קריינות ----- */
+  #caption{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);z-index:30;max-width:90vw;
+           background:rgba(0,0,0,.62);padding:12px 26px;border-radius:18px;font-size:clamp(18px,2.6vw,30px);
+           font-weight:800;text-align:center;opacity:0;transition:opacity .3s;pointer-events:none;line-height:1.4;}
+  #caption.show{opacity:1;}
+
+  /* ----- פס התקדמות ----- */
+  #bar{height:8px;background:rgba(255,255,255,.15);}
+  #barfill{height:100%;width:0;background:#ffd54a;transition:width .5s ease;}
+
+  /* ----- פקדים ----- */
+  #ctrl{display:flex;gap:14px;align-items:center;justify-content:center;padding:14px;background:rgba(0,0,0,.28);}
+  .ctrlbtn{font-size:26px;width:60px;height:60px;border:none;border-radius:50%;cursor:pointer;background:#fff;color:#1d2b3a;
+           box-shadow:0 4px 0 rgba(0,0,0,.25);transition:transform .1s;display:flex;align-items:center;justify-content:center;}
+  .ctrlbtn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.25);}
+  #play{width:74px;height:74px;font-size:34px;background:#ffd54a;color:#5a3b00;}
+  #counter{font-size:18px;font-weight:800;min-width:120px;opacity:.9;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="bar"><div id="barfill"></div></div>
+  <div id="stage"></div>
+  <!-- דמות מלווה קבועה: ילד חוקר עולם -->
+  <svg id="mascot" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- תרמיל -->
+    <rect x="30" y="74" width="60" height="50" rx="14" fill="#e07a3f"/>
+    <rect x="40" y="86" width="40" height="22" rx="7" fill="#c75f2a"/>
+    <!-- גוף / חולצה -->
+    <rect x="38" y="76" width="44" height="50" rx="18" fill="#3b9ad9"/>
+    <!-- כתפיות תרמיל -->
+    <rect x="46" y="70" width="8" height="34" rx="4" fill="#b8531f"/>
+    <rect x="66" y="70" width="8" height="34" rx="4" fill="#b8531f"/>
+    <!-- יד שמאל -->
+    <circle cx="34" cy="98" r="9" fill="#f6cda3"/>
+    <!-- ראש -->
+    <circle cx="60" cy="50" r="27" fill="#f6cda3"/>
+    <!-- כובע ספארי -->
+    <path d="M33 36 A28 25 0 0 1 87 36 Z" fill="#caa052"/>
+    <ellipse cx="60" cy="36" rx="36" ry="9" fill="#b98a3e"/>
+    <rect x="34" y="33" width="52" height="5" rx="2.5" fill="#8c6a2e"/>
+    <!-- עיניים -->
+    <circle cx="51" cy="50" r="4.2" fill="#2a2a2a"/>
+    <circle cx="69" cy="50" r="4.2" fill="#2a2a2a"/>
+    <circle cx="52.4" cy="48.6" r="1.3" fill="#fff"/>
+    <circle cx="70.4" cy="48.6" r="1.3" fill="#fff"/>
+    <!-- לחיים -->
+    <circle cx="45" cy="58" r="4.5" fill="#ffb3a0" opacity=".55"/>
+    <circle cx="75" cy="58" r="4.5" fill="#ffb3a0" opacity=".55"/>
+    <!-- חיוך -->
+    <path d="M50 60 q10 9 20 0" stroke="#9c5a2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- יד ימין שמנפנפת -->
+    <g class="hand">
+      <rect x="78" y="64" width="16" height="9" rx="4.5" fill="#f6cda3" transform="rotate(-28 86 68)"/>
+      <circle cx="96" cy="58" r="9" fill="#f6cda3"/>
+    </g>
+  </svg>
+  <div id="caption"></div>
+  <div id="ctrl">
+    <button class="ctrlbtn" id="prev" title="הקודם">⏮</button>
+    <button class="ctrlbtn" id="play" title="הפעלה/עצירה">⏸</button>
+    <button class="ctrlbtn" id="next" title="הבא">⏭</button>
+    <button class="ctrlbtn" id="restart" title="מהתחלה">🔁</button>
+    <span id="counter"></span>
+  </div>
+</div>
+
+<div id="start">
+  <div class="globe">🌍</div>
+  <h1>מִסָּבִיב לָעוֹלָם</h1>
+  <p>מַסָּע מְדַבֵּר בֵּין מְדִינוֹת וִיבָּשׁוֹת — דְּגָלִים, בְּרָכוֹת, וְהַמּוֹן דְּבָרִים מְעַנְיְנִים. שְׁבוּ בְּנוֹחוּת… יוֹצְאִים לְטַיֵּל! ✈️</p>
+  <button class="bigbtn" id="go">▶ מַתְחִילִים אֶת הַמַּסָּע</button>
+  <div class="note">לְקוֹל הַקִּרְיָנוּת — מוּמְלָץ דַּפְדְּפָן Chrome / Edge עִם קוֹל עִבְרִי מֻתְקָן.</div>
+</div>
+
+<script>
+/* ===== נתוני המדינות (זהים ליומן המסע) ===== */
+const DATA = [
+ {cont:"אֵירוֹפָּה", emo:"🏰", bg:"linear-gradient(160deg,#6aa9e9,#2e5fa3)", days:[
+   {n:"צָרְפַת",code:"fr",hi:"בּוֹנְז'וּר",cur:"יוֹרוֹ",fact:"בְּצָרְפַת יֵשׁ מִגְדָּל גָּדוֹל וְיָפֶה – מִגְדַּל אַייפֶל."},
+   {n:"אִיטַלְיָה",code:"it",hi:"צָ'או",cur:"יוֹרוֹ",fact:"בְּאִיטַלְיָה הִמְצִיאוּ אֶת הַפִּיצָה!"},
+   {n:"בְּרִיטַנְיָה",code:"gb",hi:"הֶלוֹ",cur:"לִירָה",fact:"בְּלוֹנְדּוֹן, הָעִיר הַגְּדוֹלָה שֶׁל בְּרִיטַנְיָה, גָּרָה הַמַּלְכָּה."},
+   {n:"סְפָרַד",code:"es",hi:"אוֹלָה",cur:"יוֹרוֹ",fact:"בִּסְפָרַד אוֹהֲבִים לִרְקֹד וּלְשַׂחֵק כַּדּוּרֶגֶל."},
+   {n:"יָוָן",code:"gr",hi:"יָאסוּ",cur:"יוֹרוֹ",fact:"בְּיָוָן יֵשׁ הַרְבֵּה אִיִּים יָפִים בְּתוֹךְ הַיָּם."},
+ ]},
+ {cont:"אַסְיָה", emo:"🐼", bg:"linear-gradient(160deg,#e0584e,#9c2a2f)", days:[
+   {n:"יִשְׂרָאֵל",code:"il",hi:"שָׁלוֹם",cur:"שֶׁקֶל",fact:"יִשְׂרָאֵל הִיא הַבַּיִת שֶׁלָּנוּ!"},
+   {n:"יָפָן",code:"jp",hi:"קוֹנִיצִ'יוָה",cur:"יֵן",fact:"בְּיָפָן יֵשׁ רַכָּבוֹת מְהִירוֹת מְאוֹד מְאוֹד."},
+   {n:"סִין",code:"cn",hi:"נִי חָאוֹ",cur:"יוּאָן",fact:"בְּסִין חַיָּה הַפַּנְדָּה הַחֲמוּדָה."},
+   {n:"הֹדּוּ",code:"in",hi:"נָמָסְטֵה",cur:"רוּפִּי",fact:"בְּהֹדּוּ יֵשׁ הַרְבֵּה פִּילִים גְּדוֹלִים."},
+   {n:"תַאִילַנְד",code:"th",hi:"סָוָואדִי",cur:"בָּאט",fact:"בְּתַאִילַנְד יֵשׁ פִּילִים וְחוֹפִים יָפִים."},
+ ]},
+ {cont:"אַפְרִיקָה", emo:"🦁", bg:"linear-gradient(160deg,#f0a64a,#b5641a)", days:[
+   {n:"מִצְרַיִם",code:"eg",hi:"סָלָאם",cur:"לִירָה",fact:"בְּמִצְרַיִם יֵשׁ פִּירָמִידוֹת עֲנָקִיּוֹת."},
+   {n:"קֶנְיָה",code:"ke",hi:"גָ'מְבּוֹ",cur:"שִׁילִינְג",fact:"בְּקֶנְיָה רוֹאִים אֲרָיוֹת וְגָ'ירָפוֹת בַּטֶּבַע."},
+   {n:"דְּרוֹם אַפְרִיקָה",code:"za",hi:"סָאוּובּוֹנָה",cur:"רָאנְד",fact:"בִּדְרוֹם אַפְרִיקָה יֵשׁ הַרְבֵּה חַיּוֹת בָּר."},
+   {n:"מָרוֹקוֹ",code:"ma",hi:"סָלָאם",cur:"דִּירְהָם",fact:"בְּמָרוֹקוֹ יֵשׁ מִדְבָּר גָּדוֹל וּגְמַלִּים."},
+   {n:"מָדָגַסְקַר",code:"mg",hi:"סָלָאמָה",cur:"אַרְיָארִי",fact:"בְּמָדָגַסְקַר חַיִּים הַלֵּמוּרִים הַקּוֹפְצָנִים."},
+ ]},
+ {cont:"אֲמֵרִיקָה הַצְּפוֹנִית", emo:"🗽", bg:"linear-gradient(160deg,#4a8de0,#1f4f8f)", days:[
+   {n:"אַרְצוֹת הַבְּרִית",code:"us",hi:"הֶלוֹ",cur:"דּוֹלָר",fact:"בְּאַרְצוֹת הַבְּרִית יֵשׁ אֶת פֶּסֶל הַחֵרוּת הַגָּדוֹל."},
+   {n:"קָנָדָה",code:"ca",hi:"הֶלוֹ",cur:"דּוֹלָר",fact:"בְּקָנָדָה יֵשׁ מַפַּל מַיִם עֲנָק."},
+   {n:"מֶקְסִיקוֹ",code:"mx",hi:"אוֹלָה",cur:"פֶּזוֹ",fact:"בְּמֶקְסִיקוֹ אוֹכְלִים טָאקוֹ טָעִים."},
+   {n:"גָ'מַייקָה",code:"jm",hi:"יָה מָאן",cur:"דּוֹלָר",fact:"בְּגָ'מַייקָה אוֹהֲבִים מוּזִיקָה וְחוֹף."},
+   {n:"קוֹסְטָה רִיקָה",code:"cr",hi:"פּוּרָה וִידָה",cur:"קוֹלוֹן",fact:"בְּקוֹסְטָה רִיקָה יֵשׁ קוֹפִים בַּיַּעַר הַיָּרֹק."},
+ ]},
+ {cont:"אֲמֵרִיקָה הַדְּרוֹמִית", emo:"🦜", bg:"linear-gradient(160deg,#3fb87a,#1c7a4a)", days:[
+   {n:"בְּרָזִיל",code:"br",hi:"אוֹלָה",cur:"רֵיאָל",fact:"בִּבְרָזִיל אוֹהֲבִים כַּדּוּרֶגֶל וְרִקּוּדִים."},
+   {n:"אַרְגֶנְטִינָה",code:"ar",hi:"אוֹלָה",cur:"פֶּזוֹ",fact:"בְּאַרְגֶנְטִינָה רוֹקְדִים רִקּוּד שֶׁנִּקְרָא טַנְגּוֹ."},
+   {n:"פֵּרוּ",code:"pe",hi:"אוֹלָה",cur:"סוֹל",fact:"בְּפֵרוּ חַיָּה הַלָּמָה בֶּהָרִים הַגְּבוֹהִים."},
+   {n:"צִ'ילֶה",code:"cl",hi:"אוֹלָה",cur:"פֶּזוֹ",fact:"בְּצִ'ילֶה יֵשׁ מִדְבָּר וְהָרִים גְּבוֹהִים מְאוֹד."},
+   {n:"קוֹלוֹמְבְּיָה",code:"co",hi:"אוֹלָה",cur:"פֶּזוֹ",fact:"בְּקוֹלוֹמְבְּיָה מְגַדְּלִים קָפֶה טָעִים."},
+ ]},
+ {cont:"אוֹסְטְרַלְיָה וְאוֹקְיָאנְיָה", emo:"🦘", bg:"linear-gradient(160deg,#2bb6c4,#15788a)", days:[
+   {n:"אוֹסְטְרַלְיָה",code:"au",hi:"גְּדֵיי",cur:"דּוֹלָר",fact:"בְּאוֹסְטְרַלְיָה קוֹפֵץ הַקֶּנְגּוּרוּ."},
+   {n:"נְיוּ זִילַנְד",code:"nz",hi:"קִיָה אוֹרָה",cur:"דּוֹלָר",fact:"בִּנְיוּ זִילַנְד יֵשׁ הַרְבֵּה כְּבָשִׂים בַּשָּׂדוֹת."},
+   {n:"טָהִיטִי",code:"pf",hi:"יָה אוֹרָנָה",cur:"פְרָנְק",fact:"בְּטָהִיטִי יֵשׁ אִיִּים יָפִים מְלֵאֵי פְּרָחִים."},
+   {n:"פִיגִ'י",code:"fj",hi:"בּוּלָה",cur:"דּוֹלָר",fact:"בְּפִיגִ'י יֵשׁ דָּגִים צִבְעוֹנִיִּים בַּיָּם."},
+ ]},
+];
+
+const flag = c => `https://flagcdn.com/w640/${c}.png`;
+
+/* ===== בניית השקופיות + הקריינות (beats) ===== */
+const DEFBG = "radial-gradient(circle at 50% 30%,#3b7ddd,#0b1c2c)";
+const SCENES = [];
+
+// פתיחה
+SCENES.push({
+  bg: DEFBG, nofocus:true,
+  html:`<div class="scene nofocus"><div class="bigemo">✈️🌍</div>
+        <div class="contname">מִסָּבִיב לָעוֹלָם</div>
+        <div class="contsub">בּוֹאוּ נֵצֵא יַחַד לְמַסָּע!</div></div>`,
+  beats:[
+    {say:"שָׁלוֹם יְלָדִים יְקָרִים! בְּרוּכִים הַבָּאִים לַמַּסָּע שֶׁלָּנוּ מִסָּבִיב לָעוֹלָם."},
+    {say:"יַחַד נְטַיֵּל בֵּין הַרְבֵּה מְדִינוֹת. נִרְאֶה דְּגָלִים, נִלְמַד אֵיךְ אוֹמְרִים שָׁלוֹם, וּנְגַלֶּה דְּבָרִים מְעַנְיְנִים."},
+    {say:"שְׁבוּ בְּנוֹחוּת, תִּשְׁמְעוּ וְתִסְתַּכְּלוּ. מוּכָנִים? יוֹצְאִים לַדֶּרֶךְ!"},
+  ]
+});
+
+DATA.forEach(group=>{
+  const contClean = group.cont;
+  // מעבר יבשת
+  SCENES.push({
+    bg: group.bg, nofocus:true,
+    html:`<div class="scene nofocus"><div class="bigemo">${group.emo}</div>
+          <div class="contname">${group.cont}</div>
+          <div class="contsub">בּוֹאוּ נְגַלֶּה אֵילוּ מְדִינוֹת יֵשׁ כָּאן</div></div>`,
+    beats:[
+      {say:`עַכְשָׁו אֲנַחְנוּ טָסִים לַיַּבֶּשֶׁת ${contClean}.`},
+      {say:`בּוֹאוּ נְגַלֶּה אֵילוּ מְדִינוֹת מְחַכּוֹת לָנוּ כָּאן.`},
+    ]
+  });
+  // מדינות
+  group.days.forEach(d=>{
+    SCENES.push({
+      bg: group.bg, nofocus:false,
+      html:`<div class="scene">
+        <div class="cname">${d.n}</div>
+        <img class="flag focusable" src="${flag(d.code)}" alt="דגל ${d.n}">
+        <div class="info">
+          <div class="chip greet focusable">👋 ${d.hi}</div>
+          <div class="chip cur focusable">🪙 ${d.cur}</div>
+        </div>
+        <div class="fact focusable">💡 ${d.fact}</div>
+      </div>`,
+      beats:[
+        {say:`הִגַּעְנוּ לַמְּדִינָה ${d.n}!`, focus:null},
+        {say:`הִנֵּה הַדֶּגֶל שֶׁל ${d.n}. תִּסְתַּכְּלוּ עָלָיו יָפֶה.`, focus:'.flag'},
+        {say:`כָּאן, כְּשֶׁרוֹצִים לְהַגִּיד שָׁלוֹם, אוֹמְרִים: ${d.hi}.`, focus:'.greet'},
+        {say:`וְהַכֶּסֶף שֶׁמִּשְׁתַּמְּשִׁים בּוֹ כָּאן נִקְרָא: ${d.cur}.`, focus:'.cur'},
+        {say:`וְעוֹד מַשֶּׁהוּ מְעַנְיֵן: ${d.fact}`, focus:'.fact'},
+        {say:`כָּל הַכָּבוֹד! מַמְשִׁיכִים בַּמַּסָּע.`, focus:null},
+      ]
+    });
+  });
+});
+
+// סיום
+SCENES.push({
+  bg: "radial-gradient(circle at 50% 35%,#ffd54a,#b5781a)", nofocus:true,
+  html:`<div class="scene nofocus"><div class="bigemo">🏆🌍</div>
+        <div class="contname">כָּל הַכָּבוֹד!</div>
+        <div class="contsub">סִיַּמְנוּ אֶת הַמַּסָּע מִסָּבִיב לָעוֹלָם — אַתֶּם חוֹקְרֵי עוֹלָם אֲמִתִּיִּים!</div></div>`,
+  beats:[
+    {say:"וָואו! סִיַּמְנוּ אֶת הַמַּסָּע הַגָּדוֹל מִסָּבִיב לָעוֹלָם."},
+    {say:"רָאִינוּ הַרְבֵּה מְדִינוֹת, דְּגָלִים, וּבְרָכוֹת מִכָּל הָעוֹלָם."},
+    {say:"כָּל הַכָּבוֹד לָכֶם, חוֹקְרֵי עוֹלָם! נִתְרָאֶה בַּמַּסָּע הַבָּא."},
+  ]
+});
+
+/* ===== מנוע ===== */
+const app=document.getElementById('app'), stage=document.getElementById('stage'),
+      cap=document.getElementById('caption'), barfill=document.getElementById('barfill'),
+      counter=document.getElementById('counter'), mascot=document.getElementById('mascot');
+let cur=0, bi=0, paused=false, beatTimer=null, heVoice=null, started=false;
+
+function pickVoice(){
+  const vs = speechSynthesis.getVoices();
+  heVoice = vs.find(v=>/he|iw/i.test(v.lang)) || null;
+}
+speechSynthesis.onvoiceschanged = pickVoice; pickVoice();
+
+// הסרת ניקוד + אימוג'ים לצורך הדיבור (הטקסט המוצג נשאר מנוקד)
+function clean(s){
+  return s.replace(/[֑-ׇ]/g,'')
+          .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}←-⇿⬀-⯿️]/gu,'')
+          .replace(/\s+/g,' ').trim();
+}
+
+function render(){
+  const s=SCENES[cur];
+  app.style.background=s.bg||DEFBG;
+  stage.innerHTML=s.html;
+  barfill.style.width=((cur)/(SCENES.length-1)*100)+'%';
+  counter.textContent=`שׁקוּפִית ${cur+1} / ${SCENES.length}`;
+}
+function highlight(sel){
+  const s=SCENES[cur];
+  const els=stage.querySelectorAll('.focusable');
+  if(s.nofocus){els.forEach(e=>e.classList.add('spot'));return;}
+  els.forEach(e=>e.classList.remove('spot'));
+  if(sel){ stage.querySelectorAll(sel).forEach(e=>e.classList.add('spot')); }
+  else { els.forEach(e=>e.classList.add('spot')); } // ללא מיקוד ספציפי – הכל מלא
+}
+
+function playBeat(){
+  clearTimeout(beatTimer);
+  const s=SCENES[cur]; const beat=s.beats[bi];
+  highlight(beat.focus);
+  const text=clean(beat.say);
+  cap.textContent=text; cap.classList.add('show');
+  mascot.classList.add('talking');
+
+  let done=false;
+  const go=()=>{ if(done||paused)return; done=true; advance(); };
+
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    if(heVoice) u.voice=heVoice;
+    u.lang='he-IL'; u.rate=0.9; u.pitch=1.06;
+    u.onend=()=>setTimeout(go,550);
+    u.onerror=()=>setTimeout(go,400);
+    speechSynthesis.speak(u);
+  }catch(e){ /* אין דיבור – נשען על הטיימר */ }
+
+  // טיימר ביטחון: מתקדם גם אם הדיבור לא זמין / לא הסתיים
+  const fallback = Math.max(2800, text.length*145) + 4500;
+  beatTimer=setTimeout(go, fallback);
+}
+
+function advance(){
+  bi++;
+  if(bi >= SCENES[cur].beats.length){ // סוף שקופית
+    if(cur < SCENES.length-1){ cur++; bi=0; render(); if(!paused) playBeat(); else showCaptionIdle(); }
+    else { finish(); }
+  } else {
+    if(!paused) playBeat();
+  }
+}
+function showCaptionIdle(){ cap.classList.remove('show'); mascot.classList.remove('talking'); }
+
+function finish(){
+  paused=true; document.getElementById('play').textContent='🔁';
+  cap.classList.remove('show'); mascot.classList.remove('talking');
+  barfill.style.width='100%';
+}
+
+/* ===== פקדים ===== */
+document.getElementById('play').onclick=()=>{
+  if(cur===SCENES.length-1 && bi>=SCENES[cur].beats.length-1 && paused){ // הסתיים → התחל מחדש
+    cur=0;bi=0;paused=false;document.getElementById('play').textContent='⏸';render();playBeat();return;
+  }
+  paused=!paused;
+  if(paused){ speechSynthesis.cancel(); clearTimeout(beatTimer); mascot.classList.remove('talking'); document.getElementById('play').textContent='▶'; }
+  else { document.getElementById('play').textContent='⏸'; playBeat(); }
+};
+document.getElementById('next').onclick=()=>{
+  speechSynthesis.cancel(); clearTimeout(beatTimer);
+  if(cur<SCENES.length-1){cur++;bi=0;render(); if(!paused)playBeat(); else showCaptionIdle();}
+};
+document.getElementById('prev').onclick=()=>{
+  speechSynthesis.cancel(); clearTimeout(beatTimer);
+  if(cur>0){cur--;bi=0;render(); if(!paused)playBeat(); else showCaptionIdle();}
+};
+document.getElementById('restart').onclick=()=>{
+  speechSynthesis.cancel(); clearTimeout(beatTimer);
+  cur=0;bi=0;paused=false;document.getElementById('play').textContent='⏸';render();playBeat();
+};
+
+// מקלדת: רווח = השהיה, חיצים = מעבר
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();document.getElementById('play').click();}
+  if(e.key==='ArrowLeft')document.getElementById('next').click();   // RTL: שמאל = הבא
+  if(e.key==='ArrowRight')document.getElementById('prev').click();
+});
+
+document.getElementById('go').onclick=()=>{
+  document.getElementById('start').style.display='none';
+  started=true;
+  // "חימום" מנוע הדיבור במחווה הראשונה (דרוש בדפדפנים)
+  try{ const w=new SpeechSynthesisUtterance(' '); speechSynthesis.speak(w); }catch(e){}
+  pickVoice();
+  render(); playBeat();
+};
+render(); // תצוגה ראשונית מאחורי מסך הפתיחה
+</script>
+</body>
+</html>
