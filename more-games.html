@@ -59,14 +59,6 @@
   .mpad img{width:78%;height:60%;object-fit:cover;border-radius:8px;}
   .mpad.lit{opacity:1;transform:scale(1.05);box-shadow:0 0 0 6px var(--gold),0 8px 20px rgba(0,0,0,.25);}
 
-  /* animals */
-  .animals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:620px;margin:0 auto;}
-  .abtn{background:#fff;border-radius:22px;padding:14px 6px 10px;cursor:pointer;box-shadow:0 5px 12px rgba(0,0,0,.12);
-    border:4px solid #fff;transition:transform .1s;}
-  .abtn .ae{font-size:58px;line-height:1;}
-  .abtn .an{font-size:15px;font-weight:900;display:block;margin-top:4px;}
-  .abtn:active,.abtn.jump{transform:scale(1.16) rotate(-4deg);border-color:var(--gold);box-shadow:0 0 0 5px #ffe08a,0 8px 20px rgba(0,0,0,.2);}
-
   .big{font-size:clamp(26px,6vw,44px);font-weight:900;color:var(--good);}
   .spark{position:fixed;pointer-events:none;font-size:26px;z-index:60;animation:fly 1s ease-out forwards;}
   @keyframes fly{0%{opacity:1;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}}
@@ -87,7 +79,6 @@
     <div class="menu view" id="menu">
       <div class="gcard" onclick="openGame('orch')"><div class="i">🎵</div><div class="l">תִּזְמֹרֶת הָעוֹלָם</div><div class="d">הַקִּישׁוּ דְּגָלִים וְנַגְּנוּ מוּזִיקָה</div></div>
       <div class="gcard" onclick="openGame('sort')"><div class="i">🧺</div><div class="l">מְמַיְּנִים לַמַּסָּע</div><div class="d">מִיּוּן לְפִי צֶבַע – שָׂמִים בַּסַּל הַנָּכוֹן</div></div>
-      <div class="gcard" onclick="openGame('animals')"><div class="i">🦁</div><div class="l">חַיּוֹת הָעוֹלָם</div><div class="d">הַקִּישׁוּ חַיָּה – הִיא קוֹפֶצֶת וְאוֹמֶרֶת אֶת שְׁמָהּ!</div></div>
       <div class="gcard" onclick="openGame('mem')"><div class="i">🧠</div><div class="l">רְצֶף הַזִּכָּרוֹן</div><div class="d">צְפוּ בָּרְצֶף וְחִזְרוּ עָלָיו (לַמִּתְקַדְּמִים)</div></div>
     </div>
     <!-- ORCHESTRA -->
@@ -95,8 +86,6 @@
     <!-- SORT -->
     <div class="view hidden" id="v-sort"><div class="hint" id="h-sort"></div>
       <div id="sort-item" style="min-height:96px"></div><div class="bins" id="sort-bins"></div></div>
-    <!-- ANIMALS -->
-    <div class="view hidden" id="v-animals"><div class="hint">הַקִּישׁוּ עַל חַיָּה! 🐾</div><div class="animals" id="animals"></div></div>
     <!-- MEMORY -->
     <div class="view hidden" id="v-mem"><div class="hint" id="h-mem"></div><div class="mem" id="mem"></div>
       <button class="gcard" id="mem-start" style="max-width:260px;margin:16px auto 0" onclick="memStart()"><div class="l">▶ הַתְחָלָה</div></button></div>
@@ -144,28 +133,7 @@ $("back").onclick=()=>{$("back").classList.add("hidden");$("title").textContent=
 function openGame(g){try{AC().resume();}catch(e){}$("back").classList.remove("hidden");
   if(g==="orch"){$("title").textContent="🎵 תִּזְמֹרֶת הָעוֹלָם";show("v-orch");buildOrch();}
   if(g==="sort"){$("title").textContent="🧺 מְמַיְּנִים לַמַּסָּע";show("v-sort");buildSort();nextSort();}
-  if(g==="animals"){$("title").textContent="🦁 חַיּוֹת הָעוֹלָם";show("v-animals");buildAnimals();}
   if(g==="mem"){$("title").textContent="🧠 רְצֶף הַזִּכָּרוֹן";show("v-mem");buildMem();}}
-
-/* ===== חיות העולם ===== */
-const ANIMALS=[
- {n:"פַּנְדָּה",e:"🐼",say:"פַּנְדָּה, מִסִּין",f:200,t:"sine"},
- {n:"קֶנְגּוּרוּ",e:"🦘",say:"קֶנְגּוּרוּ קוֹפֵץ!",f:300,t:"square"},
- {n:"אַרְיֵה",e:"🦁",say:"אַרְיֵה! רָאוּוּ",f:90,t:"sawtooth"},
- {n:"פִּיל",e:"🐘",say:"פִּיל גָּדוֹל",f:70,t:"sawtooth"},
- {n:"תֻּכִּי",e:"🦜",say:"תֻּכִּי צִבְעוֹנִי",f:720,t:"square"},
- {n:"גָּמָל",e:"🐫",say:"גָּמָל בַּמִּדְבָּר",f:150,t:"triangle"},
- {n:"כֶּבֶשׂ",e:"🐑",say:"כֶּבֶשׂ אוֹמֵר מֶהֶה",f:280,t:"sine"},
- {n:"קוֹף",e:"🐒",say:"קוֹף מַצְחִיק!",f:440,t:"square"},
-];
-function buildAnimals(){const el=$("animals");el.innerHTML="";ANIMALS.forEach(a=>{
-  const d=document.createElement("div");d.className="abtn";
-  d.innerHTML=`<div class="ae">${a.e}</div><span class="an">${a.n}</span>`;
-  d.onclick=()=>{d.classList.remove("jump");void d.offsetWidth;d.classList.add("jump");
-    tone(a.f,.5,a.t,0,.2);tone(a.f*1.5,.25,"sine",.05,.08);speak(a.say);
-    const r=d.getBoundingClientRect();sparkle(r.left+r.width/2,r.top+8);
-    setTimeout(()=>d.classList.remove("jump"),320);};
-  el.appendChild(d);});}
 
 /* ===== תזמורת ===== */
 function buildOrch(){const el=$("orch");el.innerHTML="";ORCH.forEach(o=>{
