@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>משחקים – מסע מסביב לעולם</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;font-family:"Heebo",Arial,sans-serif;color:#274060;
+    background:linear-gradient(160deg,#eaf4ff,#fff8ec);}
+  .home{position:fixed;top:10px;left:10px;z-index:50;background:rgba(255,255,255,.92);border-radius:50%;
+    width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;text-decoration:none;
+    box-shadow:0 2px 8px rgba(0,0,0,.28);}
+  h1{text-align:center;font-size:clamp(26px,6vw,44px);font-weight:900;margin:22px 12px 4px;}
+  .sub{text-align:center;font-size:clamp(15px,2.6vw,20px);font-weight:700;color:#3a5a80;margin-bottom:20px;}
+  .group{max-width:820px;margin:0 auto 10px;padding:0 18px;}
+  .gtitle{font-size:clamp(19px,3.4vw,26px);font-weight:900;margin:18px 6px 12px;display:flex;align-items:center;gap:8px;}
+  .band{border-radius:16px;padding:4px 14px;color:#fff;font-size:14px;font-weight:800;}
+  .low{background:#7fb4f0;} .high{background:#3cb371;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;}
+  a.card{text-decoration:none;color:#274060;background:#fff;border-radius:22px;padding:22px 18px;text-align:center;
+    box-shadow:0 7px 18px rgba(0,0,0,.10);border:4px solid #fff;transition:transform .15s;display:block;}
+  a.card:hover{transform:translateY(-4px);} a.card:active{transform:scale(.98);}
+  .ico{font-size:52px;} .clbl{font-size:clamp(20px,3.6vw,26px);font-weight:900;margin-top:8px;}
+  .cdesc{font-size:14px;color:#5a6b82;font-weight:700;margin-top:6px;line-height:1.5;}
+  footer{text-align:center;color:#8fa3bd;font-size:13px;padding:26px 0 34px;}
+</style>
+</head>
+<body>
+<a class="home" href="./" title="בית">🏠</a>
+<h1>🎮 מִשְׂחָקִים</h1>
+<div class="sub">בּוֹחֲרִים לְפִי הָרָמָה שֶׁמַּתְאִימָה 🌍</div>
+
+<div class="group">
+  <div class="gtitle">🌈 לְתִפְקוּד נָמוּךְ · סֶנְסוֹרִי <span class="band low">גִּירוּי, סִבָּה-וְתוֹצָאָה</span></div>
+  <div class="cards">
+    <a class="card" href="game.html">
+      <div class="ico">🫧</div><div class="clbl">מִשְׂחָקִים סֶנְסוֹרִיִּים</div>
+      <div class="cdesc">בּוּעוֹת · הַמְרָאָה · הַפְתָּעָה · דְּגָלִים · זִכָּרוֹן — עִם קֶרְיָנוּת וְכוֹכָבִים</div>
+    </a>
+    <a class="card" href="more-games.html">
+      <div class="ico">🎵</div><div class="clbl">תִּזְמֹרֶת וְעוֹד</div>
+      <div class="cdesc">תִּזְמֹרֶת הָעוֹלָם · מִיּוּן לְפִי צֶבַע — כֵּיף וּמְווַסֵּת</div>
+    </a>
+  </div>
+</div>
+
+<div class="group">
+  <div class="gtitle">🧭 לְבֵינוֹנִי-גָּבוֹהַּ · אֶתְגָּרִים <span class="band high">לְמִידָה, חֲשִׁיבָה</span></div>
+  <div class="cards">
+    <a class="card" href="challenges.html">
+      <div class="ico">🚩</div><div class="clbl">אַתְגְּרֵי הָעוֹלָם</div>
+      <div class="cdesc">אֵיזוֹ מְדִינָה? · זִכָּרוֹן זוּגוֹת · מִיּוּן לְיַבָּשׁוֹת</div>
+    </a>
+    <a class="card" href="more-games.html">
+      <div class="ico">🧠</div><div class="clbl">רְצֶף הַזִּכָּרוֹן</div>
+      <div class="cdesc">צְפִיָּה בָּרְצֶף וַחֲזָרָה עָלָיו — אֶתְגָּר לַמִּתְקַדְּמִים</div>
+    </a>
+  </div>
+</div>
+
+<footer>🌍 מסע מסביב לעולם · קייטנת קיץ</footer>
+</body>
+</html>
