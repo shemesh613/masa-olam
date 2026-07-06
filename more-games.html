@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>עוד משחקים – מסע מסביב לעולם</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#274060;--good:#3cb371;--gold:#f2b134;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;font-family:"Heebo",Arial,sans-serif;color:var(--ink);
+    background:linear-gradient(160deg,#eaf4ff,#fff8ec);overflow:hidden;}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column;}
+  header{padding:12px;text-align:center;background:linear-gradient(160deg,#bfe0ff,#8fc0f5);
+    box-shadow:0 3px 12px rgba(0,0,0,.12);border-radius:0 0 20px 20px;position:relative;}
+  h1{margin:0;font-size:clamp(20px,4vw,30px);font-weight:900;}
+  .stars{position:absolute;top:12px;right:14px;font-weight:900;font-size:18px;color:#b56b00;}
+  .mute{position:absolute;top:12px;left:14px;background:#fff;border:none;border-radius:18px;
+    padding:5px 12px;font-family:inherit;font-weight:800;cursor:pointer;box-shadow:0 2px 0 #cdd8e6;}
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:14px;overflow:auto;}
+  .hidden{display:none!important;}
+
+  /* menu */
+  .menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;max-width:760px;width:100%;}
+  .gcard{background:#fff;border:4px solid #fff;border-radius:24px;padding:24px 16px;text-align:center;cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,.10);transition:transform .15s;}
+  .gcard:active{transform:scale(.97);}
+  .gcard .i{font-size:56px;}
+  .gcard .l{font-size:clamp(20px,3.5vw,26px);font-weight:900;margin-top:8px;}
+  .gcard .d{font-size:14px;color:#5a6b82;font-weight:700;margin-top:4px;}
+  .back{position:absolute;top:12px;left:74px;background:#fff;border:none;border-radius:18px;padding:5px 14px;
+    font-family:inherit;font-weight:800;cursor:pointer;box-shadow:0 2px 0 #cdd8e6;}
+  .home{position:fixed;top:10px;left:10px;z-index:50;background:rgba(255,255,255,.92);border-radius:50%;
+    width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;text-decoration:none;
+    box-shadow:0 2px 8px rgba(0,0,0,.28);}
+  .view{width:100%;max-width:820px;text-align:center;}
+  .hint{font-size:clamp(18px,3vw,24px);font-weight:800;margin:6px 0 14px;min-height:30px;}
+
+  /* music */
+  .orch{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:640px;margin:0 auto;}
+  .pad{background:#fff;border-radius:20px;padding:12px 8px;cursor:pointer;box-shadow:0 5px 12px rgba(0,0,0,.12);
+    border:4px solid #fff;transition:transform .08s;}
+  .pad:active,.pad.lit{transform:scale(1.06);border-color:var(--gold);box-shadow:0 0 0 5px #ffe08a,0 8px 20px rgba(0,0,0,.2);}
+  .pad img{width:70px;height:52px;object-fit:cover;border-radius:7px;box-shadow:0 2px 5px rgba(0,0,0,.2);}
+  .pad .pn{font-weight:900;font-size:17px;margin-top:5px;}
+
+  /* sorting */
+  .item{font-size:72px;cursor:pointer;transition:transform .12s;user-select:none;}
+  .item.sel{transform:scale(1.25);filter:drop-shadow(0 0 8px var(--gold));}
+  .bins{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
+  .bin{width:120px;height:120px;border-radius:22px;display:flex;align-items:center;justify-content:center;
+    font-size:44px;cursor:pointer;border:5px dashed rgba(255,255,255,.7);box-shadow:0 6px 16px rgba(0,0,0,.15);}
+  .bin:active{transform:scale(.96);}
+
+  /* memory pads */
+  .mem{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:440px;margin:0 auto;}
+  .mpad{aspect-ratio:1;border-radius:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,.15);border:5px solid #fff;overflow:hidden;opacity:.82;transition:.12s;}
+  .mpad img{width:78%;height:60%;object-fit:cover;border-radius:8px;}
+  .mpad.lit{opacity:1;transform:scale(1.05);box-shadow:0 0 0 6px var(--gold),0 8px 20px rgba(0,0,0,.25);}
+
+  .big{font-size:clamp(26px,6vw,44px);font-weight:900;color:var(--good);}
+  .spark{position:fixed;pointer-events:none;font-size:26px;z-index:60;animation:fly 1s ease-out forwards;}
+  @keyframes fly{0%{opacity:1;transform:translate(0,0) scale(.6)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3)}}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<a class="home" href="./" title="בית">🏠</a>
+<div id="app">
+  <header>
+    <button class="mute" id="mute">🔊</button>
+    <h1 id="title">🎮 עוֹד מִשְׂחָקִים</h1>
+    <span class="stars" id="stars">⭐ 0</span>
+    <button class="back hidden" id="back">⟵ תפריט</button>
+  </header>
+  <main>
+    <!-- MENU -->
+    <div class="menu view" id="menu">
+      <div class="gcard" onclick="openGame('orch')"><div class="i">🎵</div><div class="l">תִּזְמֹרֶת הָעוֹלָם</div><div class="d">הַקִּישׁוּ דְּגָלִים וְנַגְּנוּ מוּזִיקָה</div></div>
+      <div class="gcard" onclick="openGame('sort')"><div class="i">🧺</div><div class="l">מְמַיְּנִים לַמַּסָּע</div><div class="d">מִיּוּן לְפִי צֶבַע – שָׂמִים בַּסַּל הַנָּכוֹן</div></div>
+      <div class="gcard" onclick="openGame('mem')"><div class="i">🧠</div><div class="l">רְצֶף הַזִּכָּרוֹן</div><div class="d">צְפוּ בָּרְצֶף וְחִזְרוּ עָלָיו (לַגְּדוֹלִים)</div></div>
+    </div>
+    <!-- ORCHESTRA -->
+    <div class="view hidden" id="v-orch"><div class="hint" id="h-orch">הַקִּישׁוּ עַל הַדְּגָלִים וְנַגְּנוּ! 🎵</div><div class="orch" id="orch"></div></div>
+    <!-- SORT -->
+    <div class="view hidden" id="v-sort"><div class="hint" id="h-sort"></div>
+      <div id="sort-item" style="min-height:96px"></div><div class="bins" id="sort-bins"></div></div>
+    <!-- MEMORY -->
+    <div class="view hidden" id="v-mem"><div class="hint" id="h-mem"></div><div class="mem" id="mem"></div>
+      <button class="gcard" id="mem-start" style="max-width:260px;margin:16px auto 0" onclick="memStart()"><div class="l">▶ הַתְחָלָה</div></button></div>
+  </main>
+</div>
+
+<script>
+/* ===== נתונים ===== */
+const flag=c=>`https://flagcdn.com/w320/${c}.png`;
+// תזמורת: 8 מדינות בסולם פנטטוני (כל צירוף נשמע יפה)
+const ORCH=[
+ {n:"צָרְפַת",c:"fr",f:261.63},{n:"אִיטַלְיָה",c:"it",f:293.66},{n:"בְּרִיטַנְיָה",c:"gb",f:329.63},{n:"יָפָן",c:"jp",f:392.00},
+ {n:"סִין",c:"cn",f:440.00},{n:"בְּרָזִיל",c:"br",f:523.25},{n:"אַרְצוֹת הַבְּרִית",c:"us",f:587.33},{n:"אוֹסְטְרַלְיָה",c:"au",f:659.25}];
+// מיון לפי צבע
+const COLORS=[{k:"red",n:"אָדֹם",bg:"#e8524a",items:["🍎","🍓","🌹","🍒"]},
+ {k:"yellow",n:"צָהֹב",bg:"#f2c341",items:["🍌","🌻","⭐","🧀"]},
+ {k:"green",n:"יָרֹק",bg:"#4caf72",items:["🍏","🥝","🌵","🐸"]},
+ {k:"blue",n:"כָּחֹל",bg:"#4a8de0",items:["🫐","💧","🐟","🌀"]}];
+const MEMFLAGS=[{c:"fr"},{c:"jp"},{c:"br"},{c:"au"}];
+
+let stars=+(localStorage.getItem("more_stars")||0);
+let muted=localStorage.getItem("more_mute")==="1";
+const $=id=>document.getElementById(id);
+function setStars(n){stars=n;localStorage.setItem("more_stars",n);$("stars").textContent="⭐ "+n;}
+setStars(stars);
+
+/* ===== סאונד ===== */
+let actx;const AC=()=>actx||(actx=new (window.AudioContext||window.webkitAudioContext)());
+function tone(f,d=.3,type="sine",delay=0,vol=.22){if(muted)return;try{const c=AC(),o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.value=f;o.connect(g);g.connect(c.destination);const t=c.currentTime+delay;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.start(t);o.stop(t+d+.03);}catch(e){}}
+const win=()=>[523,659,784,1047].forEach((f,i)=>tone(f,.22,"triangle",i*.09,.22));
+const oops=()=>{tone(300,.16,"sine",0,.16);tone(240,.2,"sine",.1,.14);};
+function speak(t){if(muted)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/[֑-ׇ]/g,''));u.lang="he-IL";u.rate=.9;u.pitch=1.1;speechSynthesis.speak(u);}catch(e){}}
+function sparkle(x,y){const em=["✨","⭐","🌟","💫"];for(let i=0;i<9;i++){const s=document.createElement("div");s.className="spark";s.textContent=em[i%4];s.style.left=x+"px";s.style.top=y+"px";const a=Math.random()*6.28,d=60+Math.random()*70;s.style.setProperty("--dx",Math.cos(a)*d+"px");s.style.setProperty("--dy",Math.sin(a)*d+"px");document.body.appendChild(s);setTimeout(()=>s.remove(),1000);}}
+function reward(x,y){setStars(stars+1);sparkle(x,y);win();}
+const rnd=a=>a[(Math.random()*a.length)|0];
+
+/* ===== ניווט ===== */
+function show(id){document.querySelectorAll(".view").forEach(v=>v.classList.add("hidden"));$(id).classList.remove("hidden");}
+$("mute").onclick=function(){muted=!muted;localStorage.setItem("more_mute",muted?"1":"0");this.textContent=muted?"🔇":"🔊";};
+$("mute").textContent=muted?"🔇":"🔊";
+$("back").onclick=()=>{$("back").classList.add("hidden");$("title").textContent="🎮 עוֹד מִשְׂחָקִים";stopMem();show("menu");};
+function openGame(g){try{AC().resume();}catch(e){}$("back").classList.remove("hidden");
+  if(g==="orch"){$("title").textContent="🎵 תִּזְמֹרֶת הָעוֹלָם";show("v-orch");buildOrch();}
+  if(g==="sort"){$("title").textContent="🧺 מְמַיְּנִים לַמַּסָּע";show("v-sort");buildSort();nextSort();}
+  if(g==="mem"){$("title").textContent="🧠 רְצֶף הַזִּכָּרוֹן";show("v-mem");buildMem();}}
+
+/* ===== תזמורת ===== */
+function buildOrch(){const el=$("orch");el.innerHTML="";ORCH.forEach(o=>{
+  const d=document.createElement("div");d.className="pad";
+  d.innerHTML=`<img src="${flag(o.c)}" alt=""><div class="pn">${o.n}</div>`;
+  d.onclick=e=>{tone(o.f,.5,"triangle",0,.25);tone(o.f*2,.3,"sine",0,.08);d.classList.add("lit");setTimeout(()=>d.classList.remove("lit"),220);
+    const r=d.getBoundingClientRect();sparkle(r.left+r.width/2,r.top+10);};
+  el.appendChild(d);});}
+
+/* ===== מיון לפי צבע ===== */
+let curItem=null;
+function buildSort(){const b=$("sort-bins");b.innerHTML="";COLORS.forEach(col=>{
+  const d=document.createElement("div");d.className="bin";d.style.background=col.bg;d.title=col.n;
+  d.innerHTML="🧺";d.onclick=()=>dropSort(col.k,d);b.appendChild(d);});}
+function nextSort(){const col=rnd(COLORS);const it=rnd(col.items);curItem={color:col.k,emoji:it};
+  $("h-sort").textContent="לְאֵיזֶה סַל שַׁיָּךְ?";
+  $("sort-item").innerHTML=`<span class="item" id="theItem">${it}</span>`;}
+function dropSort(k,binEl){if(!curItem)return;const r=binEl.getBoundingClientRect();
+  if(k===curItem.color){reward(r.left+r.width/2,r.top+10);$("h-sort").textContent="כָּל הַכָּבוֹד! 🎉";curItem=null;setTimeout(nextSort,700);}
+  else{oops();$("h-sort").textContent="אוֹפְּס, נְנַסֶּה סַל אַחֵר 🙂";const t=$("theItem");if(t){t.style.transform="scale(1.3)";setTimeout(()=>t&&(t.style.transform=""),200);}}}
+
+/* ===== רצף זיכרון (סיימון) ===== */
+let seq=[],step=0,memBusy=false,memPads=[];
+function buildMem(){const el=$("mem");el.innerHTML="";memPads=[];MEMFLAGS.forEach((m,i)=>{
+  const d=document.createElement("div");d.className="mpad";d.style.background=["#ffd9d9","#d9ecff","#d9ffe4","#fff2cc"][i];
+  d.innerHTML=`<img src="${flag(m.c)}" alt="">`;d.onclick=()=>memTap(i);el.appendChild(d);memPads.push(d);});
+  $("h-mem").textContent="לַחֲצוּ הַתְחָלָה כְּדֵי לְהַתְחִיל 🧠";$("mem-start").classList.remove("hidden");}
+function litPad(i,cb){const p=memPads[i];p.classList.add("lit");tone(ORCH[[0,3,5,7][i]].f,.35,"triangle");setTimeout(()=>{p.classList.remove("lit");cb&&cb();},420);}
+function playSeq(){memBusy=true;$("h-mem").textContent="צְפוּ בָּרְצֶף… 👀";let i=0;
+  (function next(){if(i>=seq.length){memBusy=false;$("h-mem").textContent="עַכְשָׁו תּוֹרְכֶם! חִזְרוּ עַל הָרְצֶף 👆";return;}litPad(seq[i],()=>{i++;setTimeout(next,180);});})();}
+function memStart(){seq=[];step=0;$("mem-start").classList.add("hidden");addMem();}
+function addMem(){seq.push((Math.random()*4)|0);step=0;setTimeout(playSeq,500);}
+function memTap(i){if(memBusy)return;litPad(i);if(i===seq[step]){step++;
+  if(step===seq.length){const r=$("mem").getBoundingClientRect();reward(r.left+r.width/2,r.top+10);
+    $("h-mem").textContent="כָּל הַכָּבוֹד! רְצֶף אָרֹךְ יוֹתֵר… 🎉";setTimeout(addMem,900);}}
+  else{oops();$("h-mem").textContent="כִּמְעַט! בּוֹאוּ נְנַסֶּה שׁוּב מֵהַתְחָלָה 🙂";memBusy=true;setTimeout(()=>{step=0;setTimeout(playSeq,400);},700);}}
+function stopMem(){memBusy=false;seq=[];}
+</script>
+</body>
+</html>
